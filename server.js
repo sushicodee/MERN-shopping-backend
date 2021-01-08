@@ -4,8 +4,10 @@ const app = express();
 const { PORT, API, BASE_URL } = require('./configs/index');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const authJwt = require('./middlewares/jwt');
 const apiRoutes = require('./routes/api.routes');
 const cors = require('cors');
+const errorHandlers = require('./helpers/errorHandlers');
 //middleware
 app.use(bodyParser.json());
 app.use(morgan('tiny'));
@@ -17,23 +19,26 @@ app.use(express.urlencoded({ extended: true }));
 
 require('./configs/dbconfigs');
 
+app.use(authJwt());
 //api Routes
 app.use(API, apiRoutes);
+app.use(errorHandlers);
 
 //error handling middleware
 app.use((req, res, next) => {
-  next({ msg: 'not found', status: 404 });
+  next('not found');
 });
-
+//error handler
 app.use((err, req, res, next) => {
   if (err) {
-    res.status(err.status || 400).json({
+    res.status(err.status || 500).json({
       message: err.msg || 'Not found',
-      status: err.status || 400,
+      status: err.status || 500,
       success: false,
     });
   }
 });
+
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });

@@ -13,7 +13,7 @@ const DB_CONFIG = {
   useCreateIndex: true,
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  useFindAndModify: true,
+  useFindAndModify: false,
 };
 mongoose
   .connect(connectionUrl, DB_CONFIG)

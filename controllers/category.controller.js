@@ -30,7 +30,7 @@ const findById = async (req, res, next) => {
   try {
     const category = await categoryQuery.findById(req.params.id);
     if (!category) {
-      return next({ msg: 'Category not found', success: false, status: 500 });
+      return next({ msg: 'Category not found' });
     }
     res.status(200).json({ category, success: true });
   } catch (err) {
