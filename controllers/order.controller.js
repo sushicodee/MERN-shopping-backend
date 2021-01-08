@@ -16,7 +16,7 @@ const findAll = async (req, res, next) => {
     const orderList = await orderQuery.findAll();
     return res.status(200).json({ orderList, success: true });
   } catch (err) {
-    return next(err);
+    next(err);
   }
 };
 
@@ -28,7 +28,7 @@ const findById = async (req, res, next) => {
     }
     res.status(200).json({ order, success: true });
   } catch (err) {
-    return next(err);
+    next(err);
   }
 };
 
@@ -41,7 +41,7 @@ const update = async (req, res, next) => {
     }
     res.status(200).json({ updatedOrder, success: true });
   } catch (err) {
-    return next({ err });
+    next({ err });
   }
 };
 
@@ -57,6 +57,15 @@ const getTotalSales = (req, res, next) => {
 const getCount = (req, res, next) => {
   orderQuery.getCount(req, res, next);
 };
+const getUserOrders = async (req, res, next) => {
+  const userid = req.params.userid;
+  try {
+    const userOrdeList = await orderQuery.getUserOrders(userid);
+    res.status(200).json({ userOrdeList });
+  } catch (err) {
+    next(err);
+  }
+};
 
 module.exports = {
   insert,
@@ -66,4 +75,5 @@ module.exports = {
   remove,
   getTotalSales,
   getCount,
+  getUserOrders,
 };

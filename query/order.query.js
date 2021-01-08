@@ -116,6 +116,15 @@ const getCount = async (_, res, next) => {
     next({ err, status: 500 });
   }
 };
+
+const getUserOrders = (id) => {
+  return OrderModel.find({ user: id })
+    .populate({
+      path: 'orderItems',
+      populate: { path: 'product', populate: 'category' },
+    })
+    .sort({ dateOrdered: -1 });
+};
 module.exports = {
   orderMapper,
   insert,
@@ -125,4 +134,5 @@ module.exports = {
   remove,
   getTotalSales,
   getCount,
+  getUserOrders,
 };
