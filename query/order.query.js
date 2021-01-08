@@ -1,5 +1,3 @@
-const orderItemModel = require('../models/order-item.model');
-const { findByIdAndRemove } = require('../models/order-item.model');
 const OrderItemModel = require('../models/order-item.model');
 const OrderModel = require('./../models/order.model');
 
@@ -100,4 +98,31 @@ const remove = (id, res, next) => {
     });
 };
 
-module.exports = { orderMapper, insert, findAll, findById, update, remove };
+const getTotalSales = async (req, res, next) => {
+  const totalSales = await OrderModel.aggregate([
+    { $group: { _id: null, totalsales: { $sum: '$totalPrice' } } },
+  ]);
+  if (!totalSales) {
+    return next('The order sales cannot be generated');
+  }
+  res.status(200).json({ totalsales: totalSales.pop().totalsales });
+};
+
+const getCount = async (_, res, next) => {
+  try {
+    const orderCount = await OrderModel.countDocuments((count) => count);
+    res.status(200).json({ orderCount });
+  } catch (err) {
+    next({ err, status: 500 });
+  }
+};
+module.exports = {
+  orderMapper,
+  insert,
+  findAll,
+  findById,
+  update,
+  remove,
+  getTotalSales,
+  getCount,
+};

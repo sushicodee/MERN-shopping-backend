@@ -49,4 +49,21 @@ const remove = (req, res, next) => {
   orderQuery.remove(req.params.id, res, next);
 };
 
-module.exports = { insert, findAll, findById, update, remove };
+//GET
+const getTotalSales = (req, res, next) => {
+  orderQuery.getTotalSales(req, res, next);
+};
+
+const getCount = (req, res, next) => {
+  orderQuery.getCount(req, res, next);
+};
+
+module.exports = {
+  insert,
+  findAll,
+  findById,
+  update,
+  remove,
+  getTotalSales,
+  getCount,
+};
