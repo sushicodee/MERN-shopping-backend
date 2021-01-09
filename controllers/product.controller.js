@@ -1,15 +1,12 @@
 const productQuery = require('../query/product.query');
 
-const insert = (req, res, next) => {
-  const data = req.body;
-  productQuery
-    .insert(data)
-    .then((data) => {
-      res.status(200).json({ data, success: true });
-    })
-    .catch((err) => {
-      next(err);
-    });
+const insert = async (req, res, next) => {
+  try {
+    const data = await productQuery.insert(req);
+    res.status(200).json({ data, success: true });
+  } catch (err) {
+    next(err);
+  }
 };
 
 const findAll = async (req, res, next) => {
@@ -64,6 +61,18 @@ const getFeatured = (req, res, next) => {
   productQuery.getFeatured(req, res, next);
 };
 
+const uploadGallery = async (req, res, next) => {
+  try {
+    const product = await productQuery.uploadGallery(req);
+    if (!product) {
+      return next({ msg: 'Product not found', success: false, status: 500 });
+    }
+    res.status(200).json({ product, success: true });
+  } catch (err) {
+    return next(err);
+  }
+};
+
 module.exports = {
   insert,
   findAll,
@@ -73,4 +82,5 @@ module.exports = {
   remove,
   getCount,
   getFeatured,
+  uploadGallery,
 };

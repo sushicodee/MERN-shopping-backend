@@ -1,6 +1,6 @@
-const categoryModel = require('../models/category.model');
+const CategoryModel = require('../models/category.model');
 const ProductModel = require('./../models/product.model');
-
+const mongoose = require('mongoose');
 const productMapper = (product, data) => {
   for (key in data) {
     switch (key) {
@@ -14,8 +14,6 @@ const productMapper = (product, data) => {
             'brand',
             'description',
             'richDescription',
-            'image',
-            'images',
             'isFeatured',
             'dateCreated',
             '_id',
@@ -30,8 +28,21 @@ const productMapper = (product, data) => {
   }
 };
 
-const insert = (data) => {
+const insert = async (req) => {
+  // if (req.fileError) return next({ msg: 'Only images can be uploaded' });
+  const category = await CategoryModel.findById(req.body.category);
+  if (!category) {
+    return next({ msg: 'Category is invalid' });
+  }
+  const file = req.file;
+  if (!file) {
+    return next({ msg: 'Please upload an image' });
+  }
+  const data = req.body;
+  const fileName = file.filename;
+  const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
   const newProduct = new ProductModel({});
+  newProduct.image = `${basePath}${fileName}`;
   productMapper(newProduct, data);
   return newProduct.save();
 };
@@ -109,6 +120,28 @@ const getFeatured = async (req, res, next) => {
   }
 };
 
+const uploadGallery = async (req) => {
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    return next({ msg: 'invalid Product id' });
+  }
+  const files = req.files;
+  if (!files) {
+    return next({ msg: 'Please upload at least one image' });
+  }
+  const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
+  let imagesPaths = [];
+  files.map((file) => {
+    imagesPaths.push(`${basePath}${file.filename}`);
+  });
+  const updatedData = {
+    images: imagesPaths,
+  };
+  console.log({ updatedData });
+  return ProductModel.findByIdAndUpdate(req.params.id, updatedData, {
+    new: true,
+  });
+};
+
 module.exports = {
   insert,
   findById,
@@ -118,4 +151,5 @@ module.exports = {
   findAll,
   getCount,
   getFeatured,
+  uploadGallery,
 };

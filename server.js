@@ -20,19 +20,20 @@ app.use(express.urlencoded({ extended: true }));
 require('./configs/dbconfigs');
 
 app.use(authJwt());
+app.use('/public/uploads', express.static(__dirname + '/public/uploads'));
 //api Routes
 app.use(API, apiRoutes);
 app.use(errorHandlers);
 
 //error handling middleware
-app.use((req, res, next) => {
-  next('not found');
-});
+// app.use((req, res, next) => {
+//   next('not found');
+// });
 //error handler
 app.use((err, req, res, next) => {
   if (err) {
     res.status(err.status || 500).json({
-      message: err.msg || 'Not found',
+      message: err.msg ? err.msg : 'Not found',
       status: err.status || 500,
       success: false,
     });
