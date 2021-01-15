@@ -26,9 +26,9 @@ app.use(API, apiRoutes);
 app.use(errorHandlers);
 
 //error handling middleware
-// app.use((req, res, next) => {
-//   next('not found');
-// });
+app.use((req, res, next) => {
+  next('not found');
+});
 //error handler
 app.use((err, req, res, next) => {
   if (err) {
