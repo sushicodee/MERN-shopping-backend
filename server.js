@@ -39,7 +39,13 @@ app.use((err, req, res, next) => {
     });
   }
 });
-
+//development
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
+});
+
+//production
+const server = app.listen(PORT, () => {
+  const port = server.address().port;
+  console.log('exprtess is working on port' + port);
 });
