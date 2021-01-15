@@ -9,6 +9,7 @@ if (process.env.NODE_ENV === 'development') {
   connectionUrl = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.fdomo.mongodb.net/${dbName}?retryWrites=true&w=majority`;
 }
 if (process.env.NODE_ENV === 'production') {
+  console.log('production');
   connectionUrl = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.fdomo.mongodb.net/${dbName}?retryWrites=true&w=majority`;
 }
 const DB_CONFIG = {
