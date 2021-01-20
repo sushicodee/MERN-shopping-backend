@@ -1,5 +1,6 @@
 const CategoryModel = require('../models/category.model');
 const ProductModel = require('./../models/product.model');
+const fs = require('fs');
 const mongoose = require('mongoose');
 const productMapper = (product, data) => {
   for (key in data) {
@@ -63,7 +64,7 @@ const findAll = (req) => {
 };
 
 const update = async (id, data, next) => {
-  const category = await categoryModel.findById(data.category);
+  const category = await CategoryModel.findById(data.category);
   if (!category) {
     return next({ msg: 'Category is invalid' });
   }
@@ -84,9 +85,17 @@ const remove = (id, res, next) => {
     if (!product) {
       return next({ message: 'product not found' });
     }
+
     product.remove((err, data) => {
       if (err) {
         return next(err);
+      }
+      const path = `./public/uploads/${data.image}`;
+
+      try {
+        fs.unlinkSync(path);
+      } catch (err) {
+        console.error(err);
       }
       res
         .status(200)
@@ -107,7 +116,6 @@ const getCount = async (_, res, next) => {
 const getFeatured = async (req, res, next) => {
   const count = req.params.count ? req.params.count : 0;
   try {
-    console.log(req.params);
     const products = await ProductModel.find({ isFeatured: true }).limit(
       +count
     );

@@ -7,9 +7,17 @@ const generateAccessToken = (payload) => {
 };
 const insert = async (req, res, next) => {
   const data = req.body;
+  // try {
+  //   const user = await UserQuery.findOne(data.email);
+  //   if (user) {
+  //     return next('User Exists');
+  //   }
+  // } catch (err) {
+  //   return next(err);
+  // }
   try {
     const user = await UserQuery.insert(data);
-    res.status(200).json({ user, success: true });
+    res.status(200).json({ user, success: true, status: 200 });
   } catch (err) {
     next(err);
   }
@@ -21,7 +29,7 @@ const findById = async (req, res, next) => {
     if (!user) {
       return next({ msg: 'User not found', success: false, status: 500 });
     }
-    res.status(200).json({ user, success: true });
+    res.status(200).json({ user, success: true, status: 200 });
   } catch (err) {
     return next({ err, success: false, status: 500 });
   }
@@ -46,7 +54,9 @@ const login = async (req, res, next) => {
         userId: user._id,
         isAdmin: user.isAdmin,
       });
-      return res.status(200).json({ user: user.email, token, success: true });
+      return res
+        .status(200)
+        .json({ user: user.email, token, success: true, status: 200 });
     }
     next({ msg: 'email/Password is invalid', status: 401 });
   } catch (err) {

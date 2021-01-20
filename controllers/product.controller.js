@@ -3,7 +3,7 @@ const productQuery = require('../query/product.query');
 const insert = async (req, res, next) => {
   try {
     const data = await productQuery.insert(req);
-    res.status(200).json({ data, success: true });
+    res.status(200).json({ data, success: true, status: 200 });
   } catch (err) {
     next(err);
   }
@@ -12,7 +12,7 @@ const insert = async (req, res, next) => {
 const findAll = async (req, res, next) => {
   try {
     const productsList = await productQuery.findAll(req);
-    return res.status(200).json({ productsList, status: true });
+    return res.status(200).json({ productsList, status: true, status: 200 });
   } catch (err) {
     return next({ ...err, status: false });
   }
@@ -28,7 +28,7 @@ const update = async (req, res, next) => {
     if (!updatedProduct) {
       return next({ msg: 'Product not updated', success: false, status: 500 });
     }
-    res.status(200).json({ updatedProduct, success: true });
+    res.status(200).json({ updatedProduct, success: true, status: 200 });
   } catch (err) {
     return next({ err, success: false, status: 500 });
   }
@@ -40,10 +40,11 @@ const findById = async (req, res, next) => {
     if (!product) {
       return next({ msg: 'Product not found', success: false, status: 500 });
     }
-    res.status(200).json({ product, success: true });
+    res.status(200).json({ product, success: true, status: 200 });
   } catch (err) {
     return next(err);
   }
+  ``;
 };
 
 const remove = (req, res, next) => {

@@ -40,6 +40,10 @@ const findById = (id) => {
   return UserModel.findById(id).select('-passwordHash');
 };
 
+const findOne = (email) => {
+  return UserModel.findOne({ email }).select('-passwordHash');
+};
+
 //auth
 const login = ({ email }) => {
   return UserModel.findOne({ email });
@@ -72,4 +76,12 @@ const remove = (id, res, next) => {
     });
   });
 };
-module.exports = { insert, findById, findAll, getCount, login, remove };
+module.exports = {
+  insert,
+  findById,
+  findAll,
+  getCount,
+  login,
+  remove,
+  findOne,
+};
