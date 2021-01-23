@@ -1,7 +1,7 @@
 const expressJwt = require('express-jwt');
 const { JWT_SECRET, API } = require('../configs');
 
-function authJwt() {
+function adminJwt() {
   const secret = JWT_SECRET;
   const api = API;
   return expressJwt({
@@ -13,8 +13,8 @@ function authJwt() {
       { url: /\/public\/uploads(.*)/, methods: ['GET', 'OPTIONS'] },
       { url: /\/api\/v1\/product(.*)/, methods: ['GET', 'OPTIONS'] },
       { url: /\/api\/v1\/category(.*)/, methods: ['GET', 'OPTIONS'] },
-      { url: /\/api\/v1\/orders(.*)/, methods: ['OPTIONS'] },
-      { url: /\/api\/v1\/user(.*)/, methods: ['OPTIONS'] },
+      { url: /\/api\/v1\/order(.*)/, methods: ['GET', 'POST', 'OPTIONS'] },
+      { url: /\/api\/v1\/user(.*)/, methods: ['GET', 'OPTIONS'] },
       `${api}/user/login`,
       `${api}/user/register`,
     ],
@@ -22,9 +22,9 @@ function authJwt() {
 }
 
 async function isRevoked(req, payload, done) {
-  if (!payload.userId) {
+  if (!payload.isAdmin) {
     done(null, true);
   }
   done();
 }
-module.exports = authJwt;
+module.exports = adminJwt;

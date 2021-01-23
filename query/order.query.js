@@ -58,6 +58,53 @@ const findAll = () => {
   return OrderModel.find().populate('user', 'name').sort({ dateOrdered: -1 });
 };
 
+const find = (condition = {}, query = {}, options = {}) => {
+  return new Promise((resolve, reject) => {
+    console.log(condition);
+    let perPage = parseInt(options.perPage) || 100;
+    let currentPage = (parseInt(options.currentPage) || 1) - 1;
+    let skipCount = perPage * currentPage;
+    let sortObj = {};
+    let sortVal = 1;
+    if (options && options.sort) {
+      switch (options.sort.sort) {
+        case 'asc':
+          sortVal = 1;
+          break;
+        case 'desc':
+          sortVal = -1;
+          break;
+        default:
+          break;
+      }
+      if (options.sort.sortBy) {
+        sortObj['_id'] = sortVal;
+      } else {
+        sortObj[options.sort.sortBy] = sortVal;
+      }
+    }
+    OrderModel.find(condition, {})
+      .sort(sortObj)
+      // .skip(skipCount)
+      .populate({
+        path: 'orderItems',
+        populate: {
+          path: 'product',
+          populate: 'category',
+        },
+      })
+      .exec((err, data) => {
+        if (!err) {
+          OrderModel.countDocuments(condition).exec((count_error, count) => {
+            if (count_error) {
+              return reject(count_error);
+            }
+            resolve({ data, count });
+          });
+        }
+      });
+  });
+};
 const findById = (id) => {
   return OrderModel.findById(id)
     .populate('user', 'name')
@@ -80,15 +127,15 @@ const update = (id, data) => {
 };
 
 const remove = (id, res, next) => {
-  OrderModel.findById(id)
+  OrderModel.findByIdAndRemove(id)
     .then(async (order) => {
       if (!order) {
         return next({ message: 'order not found' });
       }
-      console.log(order.orderItems);
       await order.orderItems.map(async (orderItem) => {
         await OrderItemModel.findByIdAndRemove(orderItem);
       });
+
       res
         .status(200)
         .json({ message: 'Order Items deleted successfully', success: true });
@@ -135,4 +182,5 @@ module.exports = {
   getTotalSales,
   getCount,
   getUserOrders,
+  find,
 };

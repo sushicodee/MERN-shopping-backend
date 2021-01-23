@@ -4,7 +4,7 @@ const insert = (req, res, next) => {
   orderQuery
     .insert(data)
     .then((data) => {
-      res.status(200).json({ data, success: true });
+      res.status(200).json({ data, success: true, status: 200 });
     })
     .catch((err) => {
       next(err);
@@ -39,7 +39,7 @@ const update = async (req, res, next) => {
     if (!updatedOrder) {
       return next({ msg: 'Order not updated' });
     }
-    res.status(200).json({ updatedOrder, success: true });
+    res.status(200).json({ updatedOrder, success: true, status: 200 });
   } catch (err) {
     next({ err });
   }
@@ -67,6 +67,43 @@ const getUserOrders = async (req, res, next) => {
   }
 };
 
+const search = (req, res, next) => {
+  let condition = {};
+  let options = {};
+  orderQuery.orderMapper(condition, req.body);
+
+  if (req.body.fromDate && req.body.toDate) {
+    const fromDate = new Date(req.body.fromDate).setHours(0, 0, 0, 0);
+    const toDate = new Date(req.body.fromDate).setHours(23, 59, 59, 999);
+    condition.created_at = {
+      $gte: newDate(fromDate),
+      $lte: newDate(toDate),
+    };
+  }
+  if (req.body.filters) {
+    for (let key in req.body.filters) {
+      if (req.body.filters[key].length > 0) {
+        condition[key] = {
+          $all: [req.body.filters[key]],
+        };
+      }
+    }
+  }
+
+  //build options
+  if (req.body.options) {
+    options = req.body.options;
+  }
+  orderQuery
+    .find(condition, req.query, options)
+    .then((orderList) => {
+      res.status(200).send({ orderList, status: 200, success: true });
+    })
+    .catch((err) => {
+      next({ message: err, status: 400 });
+    });
+};
+
 module.exports = {
   insert,
   findAll,
@@ -76,4 +113,5 @@ module.exports = {
   getTotalSales,
   getCount,
   getUserOrders,
+  search,
 };

@@ -2,7 +2,6 @@ const categoryQuery = require('./../query/category.query');
 
 const insert = (req, res, next) => {
   const data = req.body;
-  console.log({ data });
   categoryQuery
     .insert(data)
     .then((data) => {

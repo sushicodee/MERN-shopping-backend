@@ -5,6 +5,8 @@ const { PORT, API, BASE_URL } = require('./configs/index');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const authJwt = require('./middlewares/jwt');
+const adminJwt = require('./middlewares/adminjwt');
+
 const apiRoutes = require('./routes/api.routes');
 const cors = require('cors');
 const errorHandlers = require('./helpers/errorHandlers');
@@ -20,6 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 require('./configs/dbconfigs');
 
 app.use(authJwt());
+app.use(adminJwt());
 app.use('/public/uploads', express.static(__dirname + '/public/uploads'));
 //api Routes
 app.use(API, apiRoutes);

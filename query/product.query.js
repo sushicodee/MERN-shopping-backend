@@ -144,7 +144,6 @@ const uploadGallery = async (req) => {
   const updatedData = {
     images: imagesPaths,
   };
-  console.log({ updatedData });
   return ProductModel.findByIdAndUpdate(req.params.id, updatedData, {
     new: true,
   });

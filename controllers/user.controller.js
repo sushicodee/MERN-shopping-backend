@@ -56,7 +56,7 @@ const login = async (req, res, next) => {
       });
       return res
         .status(200)
-        .json({ user: user.email, token, success: true, status: 200 });
+        .json({ user: user.id, token, success: true, status: 200 });
     }
     next({ msg: 'email/Password is invalid', status: 401 });
   } catch (err) {
